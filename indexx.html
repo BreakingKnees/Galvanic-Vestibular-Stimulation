@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuralLink | Biometric Command</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6; /* Electric Blue */
+            --secondary: #10b981; /* Emerald Safe */
+            --bg: #f8fafc; /* Soft Slate */
+            --card: rgba(255, 255, 255, 0.8);
+            --text: #1e293b;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1100px; margin: auto; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin: 0;
+            color: #0f172a;
+        }
+
+        .status-badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 6px 16px;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        .span-2 { grid-column: span 2; }
+
+        .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #64748b;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .value {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .unit { font-size: 1rem; color: #94a3b8; margin-left: 4px; }
+
+        canvas { width: 100% !important; height: 180px !important; margin-top: 20px; }
+
+        #steering-box {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        #steering-box .label { color: rgba(255,255,255,0.7); }
+        #steering-box .value { color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>NeuralLink <span style="font-weight: 300; opacity: 0.5;">OS</span></h1>
+        <div class="status-badge"><div class="dot"></div> LIVE TELEMETRY</div>
+    </div>
+
+    <div class="grid">
+        <div class="card span-2" id="steering-box">
+            <span class="label">Current Steering Vector</span>
+            <div class="value" id="dir-val">STABILIZING...</div>
+        </div>
+
+        <div class="card">
+            <span class="label">System Sync</span>
+            <div class="value" id="sync-val">--</div><span class="unit">ms</span>
+        </div>
+
+        <div class="card span-2">
+            <span class="label">Voltage Flux (GVS Output)</span>
+            <canvas id="vChart"></canvas>
+            <div style="margin-top:15px">
+                <span class="value" id="v-num">0.0</span><span class="unit">Volts</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="label">Amperage Trace</span>
+            <canvas id="iChart"></canvas>
+            <div style="margin-top:15px">
+                <span class="value" id="i-num">0.0</span><span class="unit">mA</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const FB_URL = "https://gvsh-ba71c-default-rtdb.asia-southeast1.firebasedatabase.app/";
+
+    // Chart Design Customization
+    const createChart = (ctx, color, gradientColor) => {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+        gradient.addColorStop(0, gradientColor);
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        return new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(15).fill(''),
+                datasets: [{
+                    data: Array(15).fill(0),
+                    borderColor: color,
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { grid: { display: false }, border: { display: false }, ticks: { display: false } }
+                }
+            }
+        });
+    };
+
+    const vChart = createChart(document.getElementById('vChart').getContext('2d'), '#3b82f6', 'rgba(59, 130, 246, 0.2)');
+    const iChart = createChart(document.getElementById('iChart').getContext('2d'), '#10b981', 'rgba(16, 185, 129, 0.2)');
+
+    async function poll() {
+        const start = Date.now();
+        try {
+            const r = await fetch(FB_URL);
+            const d = await r.json();
+            if(d) {
+                document.getElementById('dir-val').innerText = d.dir || "CENTER";
+                document.getElementById('v-num').innerText = d.v;
+                document.getElementById('i-num').innerText = d.i;
+                document.getElementById('sync-val').innerText = Date.now() - start;
+
+                vChart.data.datasets[0].data.push(d.v);
+                vChart.data.datasets[0].data.shift();
+                vChart.update();
+
+                iChart.data.datasets[0].data.push(d.i);
+                iChart.data.datasets[0].data.shift();
+                iChart.update();
+            }
+        } catch(e) {}
+    }
+
+    setInterval(poll, 150);
+</script>
+
+</body>
+</html>
+
