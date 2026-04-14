@@ -51,7 +51,7 @@ Below is the initial bench-testing schematic of the GVS module.
 To transition this design from a bench test to a wearable bio-interface, the following **Critical Safety Upgrades** must be implemented:
 
 ### 1. Hardware-Limited Power Supply
-Instead of powering the Op-Amp with 9V batteries, the production model powers the LM358 directly from the ESP32’s `3.3V` and `GND` rails. Because of our 1.65V Virtual Ground, this safely hardware-limits the absolute maximum fault current to <3mA, even in the event of a catastrophic chip failure.
+Because of our 1.65V Virtual Ground, this safely hardware-limits the absolute maximum fault current to <3mA, even in the event of a catastrophic chip failure.
 
 ### 2. Pull-to-Center Bias Resistor
 Microcontroller DAC pins "float" while booting up. If the ESP32 is powered on but the code hasn't initialized, a floating pin acts like an antenna and can send unpredictable voltage spikes to the Op-Amp, resulting in sudden shocks. 
