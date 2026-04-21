@@ -2,6 +2,9 @@
 
 A high-performance Human-Machine Interface (HMI) designed to manipulate the human sense of balance using **Galvanic Vestibular Stimulation (GVS)**. By artificially modulating the tonic firing rate of the vestibular nerve, this system digitally induces the sensation of tilt, acceleration, and inertia without physical movement.
 
+ **Status: 🚧 Active & In-Development**
+> This project is continuously evolving. The current roadmap includes perfecting the hardware-software latency, exploring direct PC-gamepad integration, and developing real-world use cases for physical rehabilitation devices and immersive technology.
+
 ## 🚀 System Architecture
 The project functions as a zero-latency digital-to-biological pipeline:
 
@@ -45,6 +48,12 @@ Below is the initial bench-testing schematic of the GVS module.
 
 ![Prototype Schematic](hardware/prototype_sketch.png)
 
+## ⚡ Hardware Connections & Electrode Placement
+**CRITICAL SAFETY NOTE:** A 500-ohm safety resistor is required in series to limit maximum current.
+
+* **Digital to Analog:** ESP32 DAC (Pin 25) drives the non-inverting input of the Op-Amp.
+* **Completing the Circuit (Electrode Placement):** The Op-Amp A output and the inverting input connect directly to the user's **mastoid bone** (located just behind the ear) via surface electrodes to complete the circuit and stimulate the vestibular nerve.
+
 > 🚨 **WARNING: Bench Prototype Only - Do Not Mimic Directly for Human Use.**
 > The schematic above utilizes a dual-supply (+9V / -9V) configuration for the LM358 Op-Amp. While standard for general electronics, this presents a severe physiological hazard in a fault state. If the Op-Amp fails, it could dump up to 18mA through the user's tissue. 
 
@@ -63,6 +72,12 @@ For ultimate redundancy, a **3mA Fast-Blow Fuse** is added in series with the el
 ## ⚠️ Challenges & Solutions
 * **Network Latency:** Initial iterations used TCP/HTTP protocols, resulting in a noticeable delay between thumb movement and vestibular response. Swapping the ESP32 communication layer to **UDP** resolved this, prioritizing transmission speed over packet verification.
 * **Biological Comfort:** Standard digital PWM signals caused sharp, uncomfortable jolts. Implementing an LM358 Op-Amp allowed us to output a smooth, true-analog voltage curve.
+
+## 🏆 Project Origins & Awards
+This system was originally conceptualized, prototyped, and built during **Hacknite**, a hackathon hosted at the International Institute of Information Technology Bangalore (IIITB).
+
+* **Achievement:** 🥇 1st Place - IoT Track
+* **Contributors:** Aaditya Khanna and Anand S.Menon
 
 ---
 *Disclaimer: This project is a prototype for educational and experimental purposes in Human-Machine Interfacing. Proper isolation, current-limiting resistors (500Ω minimum), and safety protocols must be strictly adhered to when interfacing with biological systems.*
