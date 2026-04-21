@@ -74,7 +74,7 @@ For ultimate redundancy, a **3mA Fast-Blow Fuse** is added in series with the el
 * **Biological Comfort:** Standard digital PWM signals caused sharp, uncomfortable jolts. Implementing an LM358 Op-Amp allowed us to output a smooth, true-analog voltage curve.
 
 ## 🏆 Project Origins & Awards
-This system was originally conceptualized, prototyped, and built during **Hacknite**, a hackathon hosted at the International Institute of Information Technology Bangalore (IIITB).
+This system was originally conceptualized, prototyped, and built during **Hacknite** by Zense, a hackathon hosted at the International Institute of Information Technology Bangalore (IIITB).
 
 * **Achievement:** 🥇 1st Place - IoT Track
 * **Contributors:** Aaditya Khanna and Anand S.Menon
