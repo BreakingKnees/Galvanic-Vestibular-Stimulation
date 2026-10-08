@@ -24,7 +24,7 @@ The project's analog architecture is evolving iteratively to address strict clin
 ### Phase 2: Biphasic VCCS Architecture
 **Status:** Active Theoretical Design & Electro-Mathematical Review
 
-![V2 Schematic](v2.png)
+![V2 Schematic](hardware/v2.png)
 
 * **Architecture:** A complete topological overhaul shifting from a voltage source to a Voltage-Controlled Constant Current Source (VCCS) via a Howland Current Pump bridge. The design utilizes an OPA192 precision op-amp.
 * **Signal Precision:** Waveform generation is offloaded to an external I2C 12-bit DAC (MCP4725) to ensure sub-sensory, high-resolution sine waves.
@@ -39,7 +39,7 @@ The project's analog architecture is evolving iteratively to address strict clin
 ### Phase 1: Monophasic Wearable Prototype
 **Status:** Archived 
 
-![V1 Schematic](v1.png)
+![V1 Schematic](hardware/v1.png)
 
 * **Architecture:** Transitioned to a fully portable wearable powered by a 3.7V Li-Po battery. Employed an MT3608 boost converter and established a 1.65V virtual ground using an LM358 op-amp to allow bidirectional control logic.
 * **Clinical Limitations (Electrochemical Hazard):** The circuit functioned as a unipolar DC voltage source without active charge-balancing. Extended use risks severe skin polarization. Furthermore, operating as a voltage source meant any natural drop in skin resistance would result in an uncontrolled, hazardous spike in delivered current.
@@ -47,7 +47,7 @@ The project's analog architecture is evolving iteratively to address strict clin
 ### Phase 0: Initial Bench Validation
 **Status:** Archived (In-Vitro Testing Only)
 
-![V0 Schematic](v0.png)
+![V0 Schematic](hardware/v0.png)
 
 * **Architecture:** A rudimentary unregulated voltage source utilizing an ESP32-WROOM-32D microcontroller and an LM358DR2G op-amp.
 * **Power Supply:** Tethered to external +/- 9V bench power supplies.
