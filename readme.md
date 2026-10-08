@@ -21,6 +21,21 @@ Interfacing directly with the human vestibular system requires absolute adherenc
 
 The project's analog architecture is evolving iteratively to address strict clinical requirements. *Below is the current state of development, followed by archived legacy iterations.*
 
+### Phase 2: Biphasic VCCS Architecture
+**Status:** Active Theoretical Design & Electro-Mathematical Review
+
+![V2 Schematic](v2.png)
+
+* **Architecture:** A complete topological overhaul shifting from a voltage source to a Voltage-Controlled Constant Current Source (VCCS) via a Howland Current Pump bridge. The design utilizes an OPA192 precision op-amp.
+* **Signal Precision:** Waveform generation is offloaded to an external I2C 12-bit DAC (MCP4725) to ensure sub-sensory, high-resolution sine waves.
+* **Power Topology:** Utilizes a dual-boost module (DD1718PA) to generate true +/-12V rails from a 3.7V Li-Po, establishing the groundwork for true AC charge-balancing. A 24kΩ limiting resistor was placed in series with the load to mathematically cap the maximum output at 0.5mA.
+* **Identified Roadblocks for V3 PCB Revision:**
+  Rigorous mathematical review of V2 flagged critical compliance issues currently being addressed for the next iteration:
+  1. **Power Starvation:** The AMS1117-3.3 LDO regulator possesses a dropout voltage incompatible with Li-Po discharge curves, risking ESP32 brownouts. *Resolution: Migrating to a CMOS ultra-low dropout (LDO) regulator.*
+  2. **The Biphasic Paradox:** V2 grounds the inverting pin. Because the DAC is unipolar (0-3.3V), the current cannot swing negative. *Resolution: Reintroducing the 1.65V virtual ground to shift the baseline for true AC output.*
+  3. **Compliance Voltage Starvation:** Pushing 0.5mA through the 24kΩ safety resistor plus human skin resistance requires ~17V, which will clip on the +/-12V rails, introducing high-frequency harmonic distortion. *Resolution: Lowering the safety resistor and utilizing active diode clamping.*
+  4. **Hardware DC-Blocking:** The architecture requires physical output capacitors to strictly block DC injection during a fault state.
+
 ### Phase 1: Monophasic Wearable Prototype
 **Status:** Archived 
 
