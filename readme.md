@@ -21,6 +21,14 @@ Interfacing directly with the human vestibular system requires absolute adherenc
 
 The project's analog architecture is evolving iteratively to address strict clinical requirements. *Below is the current state of development, followed by archived legacy iterations.*
 
+### Phase 1: Monophasic Wearable Prototype
+**Status:** Archived 
+
+![V1 Schematic](v1.png)
+
+* **Architecture:** Transitioned to a fully portable wearable powered by a 3.7V Li-Po battery. Employed an MT3608 boost converter and established a 1.65V virtual ground using an LM358 op-amp to allow bidirectional control logic.
+* **Clinical Limitations (Electrochemical Hazard):** The circuit functioned as a unipolar DC voltage source without active charge-balancing. Extended use risks severe skin polarization. Furthermore, operating as a voltage source meant any natural drop in skin resistance would result in an uncontrolled, hazardous spike in delivered current.
+
 ### Phase 0: Initial Bench Validation
 **Status:** Archived (In-Vitro Testing Only)
 
